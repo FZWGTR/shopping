@@ -30,17 +30,19 @@
                         </span>)</a>
                 </div>
             </div>
-        </div>
-
+        </div> 
+ 
         <!-- 2.0 导航条 -->
         <div class="head-nav">
             <div class="section">
                 <div id="menu2" class="nav-box menuhd">
                     <ul>
                         <li class="index">
-                            <a href="#" class="">
+
+                              <router-link to="/index">
                                 <span class="out" style="top: 0px;">首页</span>
-                            </a>
+                              </router-link>
+
                         </li>
                         <li class="news">
                             <a href="#" class="">
@@ -81,6 +83,8 @@
         </div>
     </div>
 
+    <!-- 出口 -->
+    <router-view></router-view>
     <!-- 底部 -->
     <div class="footer">
                 <div class="section">
@@ -125,7 +129,7 @@ export default {
 };
 
 // 顶部效果
-$(document).ready(function() {
+$(function() {
   // 顶部效果
   $("#menu2 li a").wrapInner('<span class="out"></span>');
   $("#menu2 li a").each(function() {
@@ -157,7 +161,10 @@ $(document).ready(function() {
 <style>
 @import url("./assets/statics/site/css/style.css");
 @import url("./assets/lib/css/style.css");
-#menu2{
-  background-image:none; 
+#menu2 {
+  background-image: none;
+}
+body {
+  background-color: transparent;
 }
 </style>
