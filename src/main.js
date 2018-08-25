@@ -3,12 +3,40 @@ import Vue from 'vue'
 import App from './App.vue'
 
 import VueRouter from 'vue-router'
-
+// 首页路由
 import Index from './components/01.index.vue'
+// 产品详情页路由
+import ProductDetail from './components/02.productDetail.vue'
 
+// 格式化时间插件
+import moment from 'moment' 
+
+// 轮播图插件
+import ElementUI from "element-ui";
+import "element-ui/lib/theme-chalk/index.css";
+
+// 懒加载
+import VueLazyLoad from "vue-lazyload";
+Vue.use(VueLazyLoad, {
+  error: "./img/404.jpg",
+  loading:require('./img/GTR.jpg')
+});
+ // 轮播图插件
+Vue.use(ElementUI);
+//运用路由
 Vue.use(VueRouter)
+// 提示
+// Vue.config.productionTip = false
 
-Vue.config.productionTip = false
+// 设置全局过滤器
+Vue.filter('dateStyle', function (value) {
+
+      return moment(value).format("YYYY年MM月DD日");
+      //   return moment(value).format('MM月DD日YYYY年')
+})
+
+
+
 
 // 2. 定义路由
 // 每个路由应该映射一个组件。 其中"component" 可以是
@@ -17,9 +45,16 @@ Vue.config.productionTip = false
 // 我们晚点再讨论嵌套路由。
 const routes = [
   // 设置默认主页
-  { path: '/', component: Index },
+  {
+    path: '/',
+    // 解析到/ 直接修改路由地址为/index
+    redirect: '/index'
+  },
   // 引入首页
   { path: '/index', component: Index },
+  // 点击进入产品详情页
+  // /productDetail/:id,注意/:id写法
+  { path: '/productDetail/:id', component: ProductDetail },
 
 ]
 
@@ -37,5 +72,6 @@ new Vue({
   render: h => h(App),
   router
 }).$mount('#app')
+// 此处的#app在public中的index.html中调用
 
 

@@ -162,7 +162,7 @@ $(function() {
 @import url("./assets/statics/site/css/style.css");
 @import url("./assets/lib/css/style.css");
 #menu2 {
-  background-image: none;
+  background-image: none; 
 }
 body {
   background-color: transparent;
