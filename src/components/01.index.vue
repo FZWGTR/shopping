@@ -43,8 +43,12 @@
                     <div class="left-705">
                          <el-carousel height="341px">
                             <el-carousel-item v-for="item in sliderlist" :key="item">
-                              <h3>{{ item.title }}</h3>
-                              <img :src="item.img_url" alt="">
+                                <router-link :to="'/productDetail/'+item.id">
+                                    <!-- <a href=""> -->
+                                    <h3>{{ item.title }}</h3>
+                                    <img :src="item.img_url" alt="">
+                                    <!-- </a> -->
+                              </router-link>
                             </el-carousel-item>
                           </el-carousel>
                       
@@ -138,11 +142,9 @@
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
 
 import moment from "moment";
-
-
 
 export default {
   // 为结构命名，可以随意命名
@@ -152,38 +154,33 @@ export default {
       // 左边的数据
       catelist: [],
       // 中间轮播图的数据
-      sliderlist: [], 
+      sliderlist: [],
       //右边的数据
       toplist: [],
-   
+
       //   详细商品数据
       getgoodsgroup: []
     };
   },
   created: function() {
     // `this` 指向 vm 实例
-    axios
-      .get("http://47.106.148.205:8899/site/goods/gettopdata/goods")
-      .then(response => {
-        // console.log(response);
-        this.catelist = response.data.message.catelist;
-        this.sliderlist = response.data.message.sliderlist;
-        this.toplist = response.data.message.toplist;
-      });
-    axios
-      .get("http://47.106.148.205:8899/site/goods/getgoodsgroup")
-      .then(response => {
-        // console.log(response)
-        // console.log(response.data.message)
-        this.getgoodsgroup = response.data.message;
-      });
-  },
-
+    this.$axios.get("site/goods/gettopdata/goods").then(response => {
+      // console.log(response);
+      this.catelist = response.data.message.catelist;
+      this.sliderlist = response.data.message.sliderlist;
+      this.toplist = response.data.message.toplist;
+    });
+    this.$axios.get("site/goods/getgoodsgroup").then(response => {
+      // console.log(response)
+      // console.log(response.data.message)
+      this.getgoodsgroup = response.data.message;
+    });
+  }
 };
 </script>
 
 <style>
-.el-carousel__item > img {
+.el-carousel__item  img {
   width: 100%;
   height: 100%;
 }

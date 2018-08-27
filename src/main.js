@@ -7,9 +7,11 @@ import VueRouter from 'vue-router'
 import Index from './components/01.index.vue'
 // 产品详情页路由
 import ProductDetail from './components/02.productDetail.vue'
+// 购物车页面
+import Shopcar from './components/03.shopcar.vue'
 
 // 格式化时间插件
-import moment from 'moment' 
+import moment from 'moment'
 
 // 轮播图插件
 import ElementUI from "element-ui";
@@ -17,22 +19,45 @@ import "element-ui/lib/theme-chalk/index.css";
 
 // 懒加载
 import VueLazyLoad from "vue-lazyload";
+//iView插件
+import iView from 'iview';
+import 'iview/dist/styles/iview.css';
+
+// 放大镜
+import ProductZoomer from 'vue-product-zoomer'
+Vue.use(ProductZoomer)
+
+// 设置全局的axios,挂在在Vue原型中。之后的使用可以直接this.axios
+import axios from "axios";
+Vue.prototype.$axios=axios;
+// 设置基地址
+axios.defaults.baseURL = 'http://47.106.148.205:8899';
+
+// 懒加载
 Vue.use(VueLazyLoad, {
   error: "./img/404.jpg",
-  loading:require('./img/GTR.jpg')
+  loading: require('./img/GTR.jpg')
 });
- // 轮播图插件
+// 轮播图插件
 Vue.use(ElementUI);
 //运用路由
 Vue.use(VueRouter)
 // 提示
 // Vue.config.productionTip = false
 
+//iView插件
+Vue.use(iView);
+
 // 设置全局过滤器
 Vue.filter('dateStyle', function (value) {
 
-      return moment(value).format("YYYY年MM月DD日");
-      //   return moment(value).format('MM月DD日YYYY年')
+  return moment(value).format("YYYY年MM月DD日");
+  //   return moment(value).format('MM月DD日YYYY年')
+})
+Vue.filter('dateCommentStyle', function (value) {
+
+  return moment(value).format("YYYY年MM月DD日 h:mma");
+  //   return moment(value).format('MM月DD日YYYY年')
 })
 
 
@@ -50,11 +75,13 @@ const routes = [
     // 解析到/ 直接修改路由地址为/index
     redirect: '/index'
   },
-  // 引入首页
+  // 设置首页
   { path: '/index', component: Index },
   // 点击进入产品详情页
   // /productDetail/:id,注意/:id写法
   { path: '/productDetail/:id', component: ProductDetail },
+  //设置购物车页面
+  { path: '/shopcar/:id', component: Shopcar },
 
 ]
 

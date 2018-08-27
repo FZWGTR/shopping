@@ -13,7 +13,14 @@
                 <div class="wrap-box">
                     <div class="left-925">
                         <div class="goods-box clearfix">
-                            <div class="pic-box"></div>
+                            <div class="pic-box">
+                                <ProductZoomer
+                                v-if="images.normal_size.length!=0" 
+                                    :base-images="images"
+                                    :base-zoomer-options="zoomerOptions">
+                                </ProductZoomer>
+
+                            </div>
                             <div class="goods-spec">
                                 <h1>{{goodsinfo.title}}</h1>
                                 <p class="subtitle">{{goodsinfo.sub_title}}</p>
@@ -55,7 +62,7 @@
                                         <dd>
                                             <div id="buyButton" class="btn-buy">
                                                 <button onclick="cartAdd(this,'/',1,'/shopping.html');" class="buy">立即购买</button>
-                                                <button onclick="cartAdd(this,'/',0,'/cart.html');" class="add">加入购物车</button>
+                                                <button @click="addCart" class="add">加入购物车</button>
                                             </div>
                                         </dd>
                                     </dl>
@@ -63,7 +70,10 @@
                             </div>
                         </div>
                         <div id="goodsTabs" class="goods-tab bg-wrap">
+                             <!-- 设置吸顶效果 -->
+                         <Affix>
                             <div id="tabHead" class="tab-head" style="position: static; top: 517px; width: 925px;">
+                               
                                 <ul>
                                     <li>
                                         <a href="javascript:;" @click="showDiscuss=false" :class="{selected:!showDiscuss}">商品介绍</a>
@@ -72,7 +82,9 @@
                                         <a href="javascript:; " @click="showDiscuss=true" :class="{selected:showDiscuss}">商品评论</a>
                                     </li>
                                 </ul>
+                                
                             </div>
+                            </Affix>
                             <div class="tab-content entry" style="display: block;" v-show="showDiscuss==false" v-html="goodsinfo.content">
                                 内容
                             </div>
@@ -84,47 +96,41 @@
                                         </div>
                                         <div class="conn-box">
                                             <div class="editor">
-                                                <textarea id="txtContent" name="txtContent" sucmsg=" " datatype="*10-1000" nullmsg="请填写评论内容！"></textarea>
+                                                <textarea id="txtContent" v-model.trim="writeIn" name="txtContent" sucmsg=" " datatype="*10-1000" nullmsg="请填写评论内容！"></textarea>
                                                 <span class="Validform_checktip"></span>
                                             </div>
                                             <div class="subcon">
-                                                <input id="btnSubmit" name="submit" type="submit" value="提交评论" class="submit">
+                                                <input id="btnSubmit" @click="submitComment" name="submit" type="submit" value="提交评论" class="submit">
                                                 <span class="Validform_checktip"></span>
                                             </div>
                                         </div>
                                     </div>
                                     <ul id="commentList" class="list-box">
                                         <p style="margin: 5px 0px 15px 69px; line-height: 42px; text-align: center; border: 1px solid rgb(247, 247, 247);">暂无评论，快来抢沙发吧！</p>
-                                        <li>
+                                        <li v-for="(item, index) in comment" :key="item.id">
                                             <div class="avatar-box">
                                                 <i class="iconfont icon-user-full"></i>
                                             </div>
                                             <div class="inner-box">
                                                 <div class="info">
-                                                    <span>匿名用户</span>
-                                                    <span>2017/10/23 14:58:59</span>
+                                                    <span>{{item.user_name}}</span>
+                                                    <span>{{item.add_time | dateCommentStyle}}</span>
                                                 </div>
-                                                <p>testtesttest</p>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="avatar-box">
-                                                <i class="iconfont icon-user-full"></i>
-                                            </div>
-                                            <div class="inner-box">
-                                                <div class="info">
-                                                    <span>匿名用户</span>
-                                                    <span>2017/10/23 14:59:36</span>
-                                                </div>
-                                                <p>很清晰调动单很清晰调动单</p>
+                                                <p>{{item.content}}</p>
                                             </div>
                                         </li>
                                     </ul>
                                     <div class="page-box" style="margin: 5px 0px 0px 62px;">
                                         <div id="pagination" class="digg">
-                                            <span class="disabled">« 上一页</span>
+                                            <!-- 分页插件 -->
+                                            <!-- 定义两个官方提供的获取页数页码的方法 on-change on-page-size-change -->
+                                            <!--  :total="totalcount"为评论总数量-->
+                                             <Page :total="totalcount" show-sizer placement='top'
+                                                @on-change='pageChangeFunc' @on-page-size-change='pageSizeChangeFunc'
+                                              />
+                                            <!-- <span class="disabled">« 上一页</span>
                                             <span class="current">1</span>
-                                            <span class="disabled">下一页 »</span>
+                                            <span class="disabled">下一页 »</span> -->
                                         </div>
                                     </div>
                                 </div>
@@ -138,12 +144,15 @@
                                 <ul class="side-img-list">
                                     <li v-for="item in hotgoodslist" :key="item.id">
                                         <div class="img-box">
-                                            <a href="#/site/goodsinfo/90" class="">
+                                            <router-link :to="'/productDetail/'+item.id">
+                                            <!-- <a href="#/site/goodsinfo/90" class=""> -->
                                                 <img :src="item.img_url">
-                                            </a>
+                                            <!-- </a> -->
+                                            </router-link>
                                         </div>
                                         <div class="txt-box">
-                                            <a href="#/site/goodsinfo/90" class="">{{item.title}}</a>
+                                            <router-link :to="'/productDetail/'+item.id">{{item.title}}</router-link>
+                                            <!-- <a href="#/site/goodsinfo/90" class="">{{item.title}}</a> -->
                                             <span>{{item.add_time | dateStyle}}</span>
                                         </div>
                                     </li>
@@ -231,11 +240,18 @@
                 </div>
             </div>
         </div>
+        <!-- 返回顶部 -->
+        <BackTop></BackTop>
+
+        <!-- 加入购物车的小图片 -->
+        <!-- 使用标签时切忌在标签前加： -->
+        <img class="addCartPic" :src="imglist[0].original_path" alt="">
     </div>
 </template>
 
 <script>
-import axios from "axios";
+// import axios from "axios";
+import $ from "jquery";
 
 export default {
   name: "product",
@@ -247,37 +263,210 @@ export default {
       hotgoodslist: [],
       imglist: [],
       num1: 1,
-      showDiscuss:false,
+      showDiscuss: false,
+      comment: [],
+      commenttxt: "",
+      // 放大镜
+      zoomerOptions: {
+        zoomFactor: 3,
+        pane: "container-round",
+        hoverDelay: 300,
+        namespace: "zoomer",
+        // 小图点击可以切换
+        move_by_click: true,
+        scroll_items: 7,
+        choosed_thumb_border_color: "#dd2c00"
+      },
+      // 轮播图用的图片 默认的数据格式 不支持
+      // 这里的数据 需要在接口调用完毕之后 才能够获取
+      images: {
+        normal_size: []
+      },
 
+      //评论区
+      // 双向绑定输入框输入的内容
+      writeIn: "",
+      // 页码
+      pageIndex: 1,
+      // 页容量
+      pageSize: 10,
+      // 评论总数量
+      totalcount: 0
     };
   },
   methods: {
     handleChange(value) {
-      console.log(value);
+      //   console.log(value);
+    },
+    // 渲染页面主内容
+    getMaincontent() {
+      //   获取跳转页面带过来的id
+      this.productID = this.$route.params.id;
+      //   console.log(this.productID);
+
+      this.$axios
+        .get("site/goods/getgoodsinfo/" + this.productID)
+        .then(response => {
+          console.log(response.data.message);
+          this.goodsinfo = response.data.message.goodsinfo;
+          this.hotgoodslist = response.data.message.hotgoodslist;
+          this.imglist = response.data.message.imglist;
+
+          let temArr = [];
+
+          this.imglist.forEach((v, i) => {
+            temArr.push({
+              id: v.article_id,
+              url: v.original_path
+            });
+          });
+          this.images.normal_size = temArr;
+        });
+    },
+    //渲染评论
+    getComment() {
+      this.$axios
+        .get(
+          `site/comment/getbypage/goods/${this.productID}?pageIndex=${
+            this.pageIndex
+          }&pageSize=${this.pageSize}`
+        )
+        .then(response => {
+          console.log(response.data);
+          this.comment = response.data.message;
+          this.totalcount = response.data.totalcount;
+          // this.hotgoodslist = response.data.message.hotgoodslist;
+          // this.imglist = response.data.message.imglist;
+        });
+    },
+    //获取页码改变
+    pageChangeFunc(page) {
+      console.log(page);
+      this.pageIndex = page;
+
+      // 页码改变时 重新获取数据即可
+      this.getComment();
+    },
+    // 页容量改变 自动触发 页码改变 把页码改为1
+    // 如果当前页码就是1 不会触发 pageChange
+    pageSizeChangeFunc(size) {
+      console.log(size);
+      this.pageSize = size;
+
+      // 如果就是第一页 重新获取数据
+      this.getComment();
+    },
+    // 提交评论
+    submitComment() {
+      if (this.writeIn == "") {
+        this.$Message.error("写点东西呗");
+        return;
+      }
+      // 提交评论
+      this.$axios
+        .post(
+          `site/validate/comment/post/goods/${this.productID}`,
+          // 按照接口文档中的要求返回的对象格式
+          {
+            commenttxt: this.writeIn
+          }
+        )
+        .then(response => {
+          // console.log(response.data);
+          // this.comment = response.data.message;
+          // this.hotgoodslist = response.data.message.hotgoodslist;
+          // this.imglist = response.data.message.imglist;
+          // 局部重新刷新获取评论数据
+          this.getComment();
+          // 清空输入框内容
+          this.writeIn = "";
+          // 提示用户成功
+          if (response.data.status == 0) {
+            this.$Message.success(response.data.message);
+          }
+        // console.log(response)
+        });
+    },
+    // 点击添加购物车按钮
+    addCart() {
+      // 获取购物车按钮的起始位置
+      let cartOffset = $(".add").offset();
+      // 获取右上角有购物车字体的附近位置（消失）
+      let targetOffset = $(".icon-cart").offset();
+      // console.log(cartOffset)
+      // console.log(targetOffset)
+
+      $(".addCartPic")
+        .show()
+        .offset(cartOffset)
+        .animate(targetOffset, function() {
+          $(this).hide();
+        });
     }
   },
   created() {
-    //   获取跳转页面带过来的id
-    this.productID = this.$route.params.id;
-    console.log(this.productID);
-    axios
-      .get(
-        "http://47.106.148.205:8899/site/goods/getgoodsinfo/" + this.productID
-      )
-      .then(response => {
-        console.log(response.data.message);
-        this.goodsinfo = response.data.message.goodsinfo;
-        this.hotgoodslist = response.data.message.hotgoodslist;
-        this.imglist = response.data.message.imglist;
-      });
+    // 渲染页面主内容
+    this.getMaincontent();
+
+    //   渲染评论
+    this.getComment();
+  },
+  watch: {
+    $route(value, oldvalue) {
+      // console.log(value)
+      // console.log(oldvalue)
+      // 重新调用接口 获取数据 渲染页面
+      // 回调函数中重新复制 再次 生成
+      // 渲染页面主内容
+      this.getMaincontent();
+
+      // 人为让他 强制生成 v-if 数组长度
+    //   数组长度为0 直接销毁
+    // 因为网络存在延迟，所以一开始并没有数据
+      this.images.normal_size = [];
+    }
   }
 };
 </script>
 
-<style>
-    .ql-align-center>img{
-        width: 100%;
+<style lang="less">
+.tab-content img {
+  width: 100%;
+  display: block;
+}
+
+/* 放大镜相关样式 */
+.pic-box {
+  width: 395px;
+  .control-box .thumb-list {
+    display: flex;
+    justify-content: center;
+    img {
+      width: 80px;
+      height: 80px;
+      margin: 2px;
     }
+  }
+  .control {
+    text-align: center;
+    display: flex;
+    /* // 主轴 */
+    justify-content: center;
+    /* // 纵轴 副轴 侧轴 */
+    align-items: center;
+  }
+}
+
+// 点击添加到购物车时的移动小图片
+.addCartPic {
+  position: absolute;
+
+  width: 50px;
+  //默认隐藏
+  display: none;
+}
 </style>
+
+
 
 
