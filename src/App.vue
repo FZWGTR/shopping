@@ -23,11 +23,15 @@
                         <a>退出</a>
                         <strong>|</strong>
                     </span>
-                    <a href="" class="">
+                    <!-- <a href="" class=""> -->
+                        <router-link :to="'/shopcar/'">
                         <i class="iconfont icon-cart"></i>购物车(
                         <span id="shoppingCartCount">
-                            <span>4</span>
-                        </span>)</a>
+                            <!-- 通过$store 获取Vuex的数据 -->
+                            <span>{{$store.getters.goodsCount}}</span>
+                        </span>)
+                        </router-link>
+                        <!-- </a> -->
                 </div>
             </div>
         </div> 
@@ -125,7 +129,16 @@ import $ from "jquery";
 
 export default {
   // 根目录容器名称
-  name: "container"
+  name: "container",
+
+  data(){
+      return{
+
+      }
+  },
+  methods:{
+
+  },
 };
 
 // 顶部效果

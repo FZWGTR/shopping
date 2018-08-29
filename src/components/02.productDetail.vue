@@ -49,7 +49,7 @@
                                             <div class="stock-box">
                                                 <div class="el-input-number el-input-number--small">
                                                     <!-- 运用element插件提供的组件 -->
-                                                    <el-input-number v-model="num1" @change="handleChange" :min="1" :max="goodsinfo.stock_quantity" label="描述文字"></el-input-number>
+                                                    <el-input-number v-model="buycount" @change="handleChange" :min="1" :max="goodsinfo.stock_quantity" label="描述文字"></el-input-number>
                                                 </div>
                                             </div>
                                             <span class="stock-txt">
@@ -245,7 +245,7 @@
 
         <!-- 加入购物车的小图片 -->
         <!-- 使用标签时切忌在标签前加： -->
-        <img class="addCartPic" :src="imglist[0].original_path" alt="">
+        <img class="addCartPic" :src="imglist[0].original_path" alt="" v-if="images.normal_size.length!=0">
     </div>
 </template>
 
@@ -262,7 +262,8 @@ export default {
       //   最右侧列表数据
       hotgoodslist: [],
       imglist: [],
-      num1: 1,
+      //   准备购买添加的数量
+      buycount: 1,
       showDiscuss: false,
       comment: [],
       commenttxt: "",
@@ -307,7 +308,7 @@ export default {
       this.$axios
         .get("site/goods/getgoodsinfo/" + this.productID)
         .then(response => {
-          console.log(response.data.message);
+          //   console.log(response.data.message);
           this.goodsinfo = response.data.message.goodsinfo;
           this.hotgoodslist = response.data.message.hotgoodslist;
           this.imglist = response.data.message.imglist;
@@ -332,7 +333,7 @@ export default {
           }&pageSize=${this.pageSize}`
         )
         .then(response => {
-          console.log(response.data);
+          //   console.log(response.data);
           this.comment = response.data.message;
           this.totalcount = response.data.totalcount;
           // this.hotgoodslist = response.data.message.hotgoodslist;
@@ -341,7 +342,7 @@ export default {
     },
     //获取页码改变
     pageChangeFunc(page) {
-      console.log(page);
+      //   console.log(page);
       this.pageIndex = page;
 
       // 页码改变时 重新获取数据即可
@@ -350,7 +351,7 @@ export default {
     // 页容量改变 自动触发 页码改变 把页码改为1
     // 如果当前页码就是1 不会触发 pageChange
     pageSizeChangeFunc(size) {
-      console.log(size);
+    //   console.log(size);
       this.pageSize = size;
 
       // 如果就是第一页 重新获取数据
@@ -384,7 +385,7 @@ export default {
           if (response.data.status == 0) {
             this.$Message.success(response.data.message);
           }
-        // console.log(response)
+          // console.log(response)
         });
     },
     // 点击添加购物车按钮
@@ -397,11 +398,22 @@ export default {
       // console.log(targetOffset)
 
       $(".addCartPic")
+        .stop()
         .show()
         .offset(cartOffset)
-        .animate(targetOffset, function() {
-          $(this).hide();
+        .addClass("move")
+        .animate(targetOffset, 1000, function() {
+          $(this)
+            .hide()
+            .removeClass("move");
         });
+
+      // 提交载荷
+      // this.$store.commit为固定的语法 commit是Vuex.Store 实例方法
+      this.$store.commit("addgoods", {
+        goodID: this.productID,
+        goodNum: this.buycount
+      });
     }
   },
   created() {
@@ -412,6 +424,7 @@ export default {
     this.getComment();
   },
   watch: {
+    //   检测路由发送改变时
     $route(value, oldvalue) {
       // console.log(value)
       // console.log(oldvalue)
@@ -421,8 +434,8 @@ export default {
       this.getMaincontent();
 
       // 人为让他 强制生成 v-if 数组长度
-    //   数组长度为0 直接销毁
-    // 因为网络存在延迟，所以一开始并没有数据
+      //   数组长度为0 直接销毁
+      // 因为网络存在延迟，所以一开始并没有数据
       this.images.normal_size = [];
     }
   }
@@ -464,6 +477,12 @@ export default {
   width: 50px;
   //默认隐藏
   display: none;
+}
+.addCartPic.move {
+  transform: scale(0.5) rotate(720deg);
+
+  transition: transform 1s, opacity 1s;
+  opacity: 0.5;
 }
 </style>
 
