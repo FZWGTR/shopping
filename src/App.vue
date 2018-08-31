@@ -11,16 +11,19 @@
                     <a target="_blank" href="#"></a>
                 </div>
                 <div id="menu" class="right-box">
-                    <span style="display: none;">
-                        <a href="" class="">登录</a>
+                    <!-- 未登录状态显示 -->
+                    <span v-show="$store.state.isShow==false">
+                        <!-- <a href="" class="">登录</a> -->
+                        <router-link to="/login">登录</router-link>
                         <strong>|</strong>
                         <a href="" class="">注册</a>
                         <strong>|</strong>
                     </span>
-                    <span>
+                    <!-- 已登录状态显示 -->
+                    <span v-show="$store.state.isShow==true">
                         <a href="" class="">会员中心</a>
                         <strong>|</strong>
-                        <a>退出</a>
+                        <a @click="logout">退出</a>
                         <strong>|</strong>
                     </span>
                     <!-- <a href="" class=""> -->
@@ -131,14 +134,38 @@ export default {
   // 根目录容器名称
   name: "container",
 
-  data(){
-      return{
-
-      }
+  data() {
+    return {};
   },
-  methods:{
+  methods: {
+    logout() {
+      //   console.log(1)
+      this.$confirm("你要退出离开啦, 是真的吗", {
+        confirmButtonText: "嗯嗯",
+        cancelButtonText: "再想想",
+        type: "warning"
+      })
+        .then(() => {
+          this.$axios.get("site/account/logout").then(response => {
+            // console.log(response)
+            if (response.data.status == 0) {
+              // 提示已登出
+              this.$message(response.data.message);
 
-  },
+              //右上角状态栏改变
+              this.$store.commit("changeLoginStatus", false);
+            } else {
+            }
+          });
+        })
+        .catch(() => {
+          this.$message({
+            type: "success",
+            message: "回来咯，哈哈哈"
+          });
+        });
+    }
+  }
 };
 
 // 顶部效果
@@ -175,7 +202,7 @@ $(function() {
 @import url("./assets/statics/site/css/style.css");
 @import url("./assets/lib/css/style.css");
 #menu2 {
-  background-image: none; 
+  background-image: none;
 }
 body {
   background-color: transparent;

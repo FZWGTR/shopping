@@ -1,6 +1,11 @@
 <template>
     
-<div>
+<div v-loading="loading"
+    element-loading-text="拼命登录中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)"
+    style="width: 100%"
+>
     <div class="section">
             <div class="location">
                 <span>当前位置：</span>
@@ -20,14 +25,14 @@
                     </div>
 
                     <div id="loginform" name="loginform" class="login-box">
-                        <div class="input-box">
-                            <input id="txtUserName" name="txtUserName" type="text" placeholder="用户名/手机/邮箱" maxlength="50">
-                        </div>
-                        <div class="input-box">
-                            <input id="txtPassword" name="txtPassword" type="password" placeholder="输入登录密码" maxlength="16">
-                        </div>
+                         <Input v-model.trim="name" placeholder="请输入用户名" style="width: 342px" />
+                         <br>
+                         <br>
+                         <Input v-model.trim="password" type="password" placeholder="请输入密码" style="width: 342px" />
+                         <br>
+                         <br>
                         <div class="btn-box">
-                            <input id="btnSubmit" name="btnSubmit" type="submit" value="立即登录">
+                            <input id="btnSubmit" name="btnSubmit" type="submit" @click="login" value="立即登录">
                         </div>
                     </div>
                 </div>
@@ -43,9 +48,45 @@
 export default {
   name: "login",
   data() {
-    return {};
+    return {
+        name:'',
+        password:'',
+        // 默认为不显示加载遮罩层
+        loading:false,
+    };
   },
-  methods: {}
+  methods: {
+    //   点击登录
+      login(){
+        //   点击登录发送请求前打开加载遮罩层
+          this.loading=true
+
+          this.$axios.post('site/account/login',{
+              user_name:this.name,
+              password:this.password
+          }).then(response=>{
+            //   数据请求回来后关闭遮罩层
+              this.loading=false
+              console.log(response)
+
+            // 如果status表示登录失败（用户名或者密码错误）
+            if(response.data.status==1){
+                // 根据请求发回的提示
+                this.$message(response.data.message)
+            }else{
+                // 登录成功跳转到上一个页面
+                this.$router.push(this.$store.state.pageFrom)
+
+                // 登录后右上角的登录状态改变为会员中心的
+                this.$store.commit('changeLoginStatus',true)
+                
+                // this.$store.state.isShow=true
+            }
+
+          })
+
+      }
+  }
 };
 </script>
 

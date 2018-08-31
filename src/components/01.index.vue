@@ -42,7 +42,7 @@
                     <!--幻灯片-->
                     <div class="left-705">
                          <el-carousel height="341px">
-                            <el-carousel-item v-for="item in sliderlist" :key="item">
+                            <el-carousel-item v-for="item in sliderlist" :key="item.id">
                                 <router-link :to="'/productDetail/'+item.id">
                                     <!-- <a href=""> -->
                                     <h3>{{ item.title }}</h3>
@@ -144,7 +144,6 @@
 <script>
 // import axios from "axios";
 
-import moment from "moment";
 
 export default {
   // 为结构命名，可以随意命名

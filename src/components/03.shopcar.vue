@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div  v-loading="loading"
+    element-loading-text="拼命加载中"
+    element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
 
         <div class="section">
             <div class="location">
@@ -110,8 +113,10 @@
                     <!--购物车底部-->
                     <div class="cart-foot clearfix">
                         <div class="right-box">
+                            <router-link to="/index">
                             <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <button class="submit" onclick="formSubmit(this, '/', '/shopping.html');">立即结算</button>
+                            </router-link>
+                            <button class="submit" @click="checkAndPay">立即结算</button>
                         </div>
                     </div>
                     <!--购物车底部-->
@@ -129,7 +134,9 @@ export default {
   name: "shoppingcar",
   data() {
     return {
-      message: []
+      message: [],
+      //   设置加载时的遮罩层,默认关闭状态
+      loading: false
     };
   },
   created() {
@@ -180,11 +187,52 @@ export default {
     // 提交载荷
     // 定义修改的方法
     numChange(num, id) {
-        console.log(num,id)
+      // console.log(num,id)
       this.$store.commit("updataGoodsNum", {
         goodID: id,
         goodNum: num
       });
+    },
+    // 点击结算判断是否登录并且跳转
+    checkAndPay() {
+      if (this.message.totalprice == 0) {
+        this.$message("买点东西呗");
+        console.log("买点东西呗");
+        return;
+      }
+      // 数据请求时打开遮罩层
+      this.loading = true;
+      let ids = "";
+
+      this.message.forEach(v => {
+        // console.log(v.selected);
+        if (v.selected == true) {
+          ids = ids + v.id + ",";
+        }
+      });
+
+      ids = ids.slice(0, -1);
+    //   console.log(ids);
+
+      this.$router.push(`/order/${ids}`);
+
+      // 通过请求数据判断当前登录状态
+      // this.$axios.get('site/account/islogin').then(response=>{
+      //     console.log(response)
+
+      //     // 数据请求完毕关闭遮罩层
+      //     this.loading=false;
+      //     // 如果没有登录则去登录页
+      //     if(response.data.code=='nologin'){
+
+      //         this.$router.push('/login')
+
+      //     }else{
+
+      //         this.$router.push('/order')
+      //     }
+
+      // })
     }
   },
   computed: {
