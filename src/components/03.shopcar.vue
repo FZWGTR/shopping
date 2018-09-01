@@ -91,7 +91,7 @@
 
 
                                     <!-- ????$event??? -->
-
+                                    <!-- 涉及父子组件传值，从ele第三方组件传递了值到Vue的父组件中 -->
 
                                     <td><el-input-number size="mini" :min='1' v-model="item.buycount"  @change="numChange($event,item.id)"></el-input-number></td>
                                     <td>{{item.sell_price*item.buycount}}</td>

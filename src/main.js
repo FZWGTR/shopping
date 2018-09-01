@@ -235,7 +235,7 @@ const routes = [
   // 设置下订单页面
   { path: '/order/:ids', component: Order },
   // 设置订单详情页
-  { path: '/orderDetail/', component: OrderDetail },
+  { path: '/orderDetail/:ids', component: OrderDetail },
   // 设置支付成功页面
   { path: '/paysuccess/', component: paySuccess },
   // 设置会员中心页
@@ -268,7 +268,10 @@ router.beforeEach((to, from, next) => {
   // 如果访问的是 order页面 判断登陆 
   // 每次过来都保存一下来时的地址
   // 提交载荷 保存数据
-  // this.$store.state.pageFrom=from
+
+  // this.$store.state.pageFrom=from  这种方法可以存储但是没有办法及时动态更新页面中的数据
+  // 以下方法可以时时更新数据
+  // from中有path的属性
   store.commit('saveFromPath',from.path)
 
   // 一定要调用该方法来 resolve 这个钩子。执行效果依赖 next 方法的调用参数。
