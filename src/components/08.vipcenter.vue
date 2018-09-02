@@ -30,13 +30,16 @@
                                     <ul>
                                         <li>
                                             <h2>
+                                                
                                                 <i class="iconfont icon-order"></i>
                                                 <span>订单管理</span>
+                                                
                                             </h2>
                                             <div class="list">
                                                 <p>
-                                                    <a href="#/site/member/orderlist" class="">
-                                                        <i class="iconfont icon-arrow-right"></i>交易订单</a>
+                                                   <router-link to="/deallist">
+                                                        <i class="iconfont icon-arrow-right"></i>交易订单
+                                                    </router-link>
                                                 </p>
                                             </div>
                                         </li>
@@ -125,11 +128,16 @@ export default {
 
     },
     created() {
-        
+        // let id=this.$route.params.id
+        // this.$axios.get(`site/validate/order/getorder/${id}`).then(response=>{
+        //     console.log(response)
+        // })
     },
 }
 </script>
 
-<style lang="">
-    
+<style lang="less">
+    .sub-tit{
+        padding: 0; 
+    }
 </style>

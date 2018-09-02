@@ -76,9 +76,9 @@ const store = new Vuex.Store({
     isShow: false,
 
     // 记录上一页，搭配路由守卫中的from使用
-    pageFrom:'',
+    pageFrom: '',
   },
-// Vuex中的方法储存库
+  // Vuex中的方法储存库
   mutations: {
     // 暴露修改的方法
     // increment (state,n) {
@@ -140,11 +140,11 @@ const store = new Vuex.Store({
     },
     // 登录状态改变
     changeLoginStatus(state, type) {
-      state.isShow=type
+      state.isShow = type
     },
     // 保存上一页的路径
-    saveFromPath(state,fromPath){
-      state.pageFrom=fromPath
+    saveFromPath(state, fromPath) {
+      state.pageFrom = fromPath
     },
 
 
@@ -191,14 +191,23 @@ Vue.use(VueRouter)
 Vue.use(iView);
 
 // 设置全局过滤器
-Vue.filter('dateStyle', function (value) {
+Vue.filter('dateStyle', function (value,diyStyle) {
 
+  if(diyStyle!=undefined){
+
+    return moment(value).format(diyStyle);
+  }else{
+
+    // 没有传就用默认的
   return moment(value).format("YYYY年MM月DD日");
   //   return moment(value).format('MM月DD日YYYY年')
+
+  }
+
 })
 Vue.filter('dateCommentStyle', function (value) {
 
-  return moment(value).format("YYYY年MM月DD日 h:mma");
+  return moment(value).format("YYYY年MM月DD日 HH:mm:ss");
   //   return moment(value).format('MM月DD日YYYY年')
 })
 
@@ -231,19 +240,51 @@ const routes = [
   //设置购物车页面
   { path: '/shopcar/', component: Shopcar },
   // 设置登录页面Login
-  { path: '/login/', component: Login },
+  {
+    path: '/login/', component: Login,
+  },
   // 设置下订单页面
-  { path: '/order/:ids', component: Order },
+  {
+    path: '/order/:ids', component: Order,
+    meta: {
+      checkLogin: true
+    }
+  },
   // 设置订单详情页
-  { path: '/orderDetail/:ids', component: OrderDetail },
+  {
+    path: '/orderDetail/:ids', component: OrderDetail,
+    meta: {
+      checkLogin: true
+    }
+  },
   // 设置支付成功页面
-  { path: '/paysuccess/', component: paySuccess },
+  {
+    path: '/paysuccess/:id', component: paySuccess,
+    meta: {
+      checkLogin: true
+    }
+  },
   // 设置会员中心页
-  { path: '/vipcenter/', component: vipCenter },
+  {
+    path: '/vipcenter/', component: vipCenter,
+    meta: {
+      checkLogin: true
+    }
+  },
   // 设置会员中心交易列表页
-  { path: '/deallist/', component: dealList },
+  {
+    path: '/deallist/', component: dealList,
+    meta: {
+      checkLogin: true
+    }
+  },
   // 设置会员中心查看列表页
-  { path: '/watchlist/', component: watchList },
+  {
+    path: '/watchlist/:id', component: watchList,
+    meta: {
+      checkLogin: true
+    }
+  },
 
 ]
 
@@ -272,7 +313,7 @@ router.beforeEach((to, from, next) => {
   // this.$store.state.pageFrom=from  这种方法可以存储但是没有办法及时动态更新页面中的数据
   // 以下方法可以时时更新数据
   // from中有path的属性
-  store.commit('saveFromPath',from.path)
+  store.commit('saveFromPath', from.path)
 
   // 一定要调用该方法来 resolve 这个钩子。执行效果依赖 next 方法的调用参数。
   // 进行管道中的下一个钩子。如果全部钩子执行完了，则导航的状态就是 confirmed (确认的)。
@@ -280,7 +321,8 @@ router.beforeEach((to, from, next) => {
 
   //如果当前是跳转到order页面 ，则发送登录状态请求进行判断
   // console.log(123)
-  if (to.path.indexOf('/order') != -1) {
+  // to.meta.要搭配到要验证的路由中使用
+  if (to.meta.checkLogin == true) {
 
     axios.get('site/account/islogin').then(response => {
       // console.log(response)
@@ -325,10 +367,11 @@ new Vue({
 
         store.state.isShow = true
 
-      } else {
+      } 
+      // else {
 
 
-      }
+      // }
 
 
     })

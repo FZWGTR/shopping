@@ -371,7 +371,11 @@ export default {
                 // 带上返回的id值跳转到下一页（订单详情页）
                 this.$router.push('/orderDetail/'+orderId)
                 // 减去右上角购物车中已购买的数量
-                this.$store.commit('deletGoods',orderId)
+                // 因为一下方法是只可以删除单个的id，但是传入的是多个的id,所以要先遍历
+                // this.$store.commit('deletGoods',orderId)
+                this.goodslist.forEach(v=>{
+                    this.$store.commit('deletGoods',v.id)
+                })
 
             }else{
                 this.$message(response.data.message)

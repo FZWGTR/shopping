@@ -21,7 +21,8 @@
                     </span>
                     <!-- 已登录状态显示 -->
                     <span v-show="$store.state.isShow==true">
-                        <a href="" class="">会员中心</a>
+                        <!-- <a href="" class="">会员中心</a> -->
+                        <router-link to="/vipcenter">会员中心</router-link>
                         <strong>|</strong>
                         <a @click="logout">退出</a>
                         <strong>|</strong>

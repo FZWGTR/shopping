@@ -23,9 +23,13 @@
                                                 <i class="iconfont icon-check"></i>
                                             </div>
                                             <div class="info">
-                                                <strong>订单已支付成功！</strong>
+                                                <strong >订单已支付成功！</strong>
+
+                                                <p><span class='countdown'>{{time}}</span>S后跳转到查看进度详情页</p>
                                                 <p>您可以点击这里进入
-                                                    <a href="/user/center/index.html">会员中心</a>查看订单状态！</p>
+                                                    <router-link :to="'/vipcenter/'+this.$route.params.id">会员中心</router-link>
+                                                    <!-- <a href="/user/center/index.html">会员中心</a> -->
+                                                    查看订单状态！</p>
                                                 <p>如有其它问题，请立即与我们客服人员联系。</p>
                                             </div>
                                         </div>
@@ -42,17 +46,39 @@
 
 <script>
 export default {
-    name:'paysuccess',
-    data(){
-        return{
+  name: "paysuccess",
+  data() {
+    return {
+      // 倒数用的时间
+      time: "5",
+    };
+  },
+  mounted() {
+     let id=this.$route.params.id  
 
-        }
-    },
-}
+   let timeInter= setInterval(() => {
+
+      this.time--;
+
+      if (this.time == 0) {
+        //   跳转查看页面
+          this.$router.push(`/watchlist/${id}`)
+        // 清除定时器
+          clearInterval(timeInter)
+
+      }
+
+    },1000);
+  }
+};
 </script>
 
 <style lang="less">
-    
+.countdown{
+    color: red;
+    font-size: 22px;
+    font-weight: 700;
+}
 </style>
 
 

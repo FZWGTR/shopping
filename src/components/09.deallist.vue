@@ -36,8 +36,11 @@
                                                     </h2>
                                                     <div class="list">
                                                         <p>
-                                                            <a href="#/site/member/orderlist" class="router-link-exact-active ">
-                                                                <i class="iconfont icon-arrow-right"></i>交易订单</a>
+                                                            <!-- <a href="#/site/member/orderlist" class="router-link-exact-active "> -->
+                                                            <router-link to="/deallist/">
+                                                            <i class="iconfont icon-arrow-right"></i>交易订单
+                                                            </router-link>
+                                                                
                                                         </p>
                                                     </div>
                                                 </li>
@@ -74,10 +77,22 @@
                                         <div class="sub-tit">
                                             <ul>
                                                 <li class="selected">
-                                                    <a href="/user/order-list.html">交易订单</a>
+                                                    <!-- <a href="/deallist/">交易订单</a> -->
+                                                    <router-link to="/deallist/">交易订单</router-link>
                                                 </li>
                                             </ul>
+                                             
                                         </div>
+                                           <el-pagination
+                                              @size-change="SizeChange"
+                                              @current-change="CurrentChange"
+                                              :current-page="pageIndex"
+                                              :page-sizes="[5, 10, 15, 20]"
+                                              :page-size="pageSize"
+                                              layout="total, sizes, prev, pager, next, jumper"
+                                              :total="totalcount"
+                                              style="margin-left:60px">
+                                            </el-pagination>
                                         <div class="table-wrap">
                                             <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ftable">
                                                 <tbody>
@@ -85,25 +100,27 @@
                                                         <th width="16%" align="left">订单号</th>
                                                         <th width="10%">姓名</th>
                                                         <th width="12%">订单金额</th>
-                                                        <th width="11%">下单时间</th>
+                                                        <th width="15%">下单时间</th>
                                                         <th width="10%">状态</th>
                                                         <th width="12%">操作</th>
                                                     </tr>
-                                                    <tr>
-                                                        <td>BD20171025213815752</td>
-                                                        <td align="left">ivanyb1212</td>
+                                                    <tr v-for="item in message" :key="item.id"  class="messageTr">
+                                                        <td>{{item.order_no}}</td>
+                                                        <td align="left">{{item.accept_name==""?'匿名':item.accept_name}}</td>
                                                         <td align="left">
-                                                            <strong style="color: red;">￥7220</strong>
+                                                            <strong style="color: red;">￥{{item.payable_amount}}</strong>
                                                             <br> 在线支付
                                                         </td>
-                                                        <td align="left">2017-10-25 21:38:15</td>
+                                                        <td align="left">{{item.payment_time | dateStyle("YYYY年MM月DD日 HH:mm:ss")}}</td>
                                                         <td align="left">
-                                                            待付款
+                                                            {{item.statusName}}
                                                         </td>
                                                         <td align="left">
-                                                            <a href="#/site/member/orderinfo/12" class="">查看订单</a>
+                                                            <router-link :to="'/watchlist/'+item.id">查看订单</router-link>
+                                                            <!-- <a href="#/site/member/orderinfo/12" class="">查看订单</a> -->
                                                             <br>
-                                                            <a href="#/site/goods/payment/12" class="">|去付款</a>
+                                                            <router-link v-if="item.status==1" :to="'/orderDetail/'+item.id">去付款</router-link>
+                                                            <!-- <a href="#/site/goods/payment/12" class="">|去付款</a> -->
                                                             <br>
                                                             <a href="javascript:void(0)">|取消</a>
                                                             <br>
@@ -126,18 +143,55 @@
 
 <script>
 export default {
-    name:'deallist',
-    data(){
-        return{
-
-        }
+  name: "deallist",
+  data() {
+    return {
+      // 默认第一页
+      pageIndex: 1,
+      // 默认显示10条信息
+      pageSize: 10,
+      // 总数量
+      totalcount: "",
+      // 所有的详细数据
+      message: []
+    };
+  },
+  methods: {
+    // 获取数据
+    getData() {
+      this.$axios
+        .get(
+          `site/validate/order/userorderlist?pageIndex=${this.pageIndex}&pageSize=${this.pageSize}`
+        )
+        .then(response => {
+        //   console.log(response);
+          this.totalcount = response.data.totalcount;
+          this.message = response.data.message;
+        });
     },
-    methods:{
-
+    // 页容量改变
+    SizeChange(value) {
+    //   console.log(value)
+      this.pageSize = value;
+    //   再次获取数据刷新页面
+      this.getData()
+    //   改变后去到首页
+      this.pageIndex= 1;
     },
-    created() {
-        
-    },
-}
+    //页码改变
+    CurrentChange(value) {
+    //   console.log(value)
+      this.pageIndex= value;
+       //   再次获取数据刷新页面
+      this.getData()
+    }
+  },
+  created() {
+    // 获取数据
+    this.getData();
+  }
+};
 </script>
+<style lang="less">
+</style>
 

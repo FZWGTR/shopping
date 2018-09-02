@@ -71,7 +71,8 @@
                             </div>
                             <div class="el-col el-col-6">
                                 <div id="container2">
-                                    <canvas width="300" height="300"></canvas>
+                                    <!-- 二维码标签 -->
+                                    <qrcode :value="'http://47.106.148.205:8899/site/validate/pay/alipay/'+$route.params.ids" :options="{ size: 200 }"></qrcode>
                                 </div>
                             </div>
                         </div>
@@ -84,28 +85,63 @@
 </template>
 
 <script>
+// 生成二维码
+import VueQrcode from "@xkeshi/vue-qrcode";
+
+// Vue.component(VueQrcode.name, VueQrcode);
+
 export default {
   name: "orderDetail",
   data() {
     return {
-        userInfo:'',
+      userInfo: ""
     };
   },
-  methods: {
-
+  //   二维码组件
+  components: {
+    [VueQrcode.name]: VueQrcode
   },
+  methods: {},
   created() {
-      let orderid=this.$route.params.ids
-    
-      this.$axios.get(`site/validate/order/getorder/${orderid}`).then(response=>{
-          console.log(response.data.message[0])
-          this.userInfo=response.data.message[0]
-      })
-  },
+    let orderid = this.$route.params.ids;
+
+    this.$axios
+      .get(`site/validate/order/getorder/${orderid}`)
+      .then(response => {
+        // console.log(response.data.message[0]);
+        this.userInfo = response.data.message[0];
+      });
+
+// 设置定时器，每隔1秒向服务器发起请求数据，查看message中的status是否改变
+   let settime= setInterval(() => {
+      this.$axios
+        .get(`site/validate/order/getorder/${orderid}`)
+        .then(response => {
+            // console.log(response)
+            // console.log(response.data.message[0])
+            this.userInfo=response.data.message[0]
+            
+          // 支付成功
+          if (this.userInfo.status!=1) {
+
+             this.$message.success('支付成功咯')
+
+               this.$router.push(`/paysuccess/${orderid}`)
+
+               clearInterval(settime)
+
+          } 
+          // 未支付成功
+        //   else {
+             
+        //   }
+
+
+        });
+    }, 1000);
+  }
 };
 </script>
 
 <style lang="less">
-
-
 </style>
